@@ -19,6 +19,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,10 +39,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.ui.components.Chrono
 import com.example.androiddevchallenge.ui.components.Pause
 import com.example.androiddevchallenge.ui.components.Start
@@ -54,8 +58,10 @@ class MainActivity : AppCompatActivity() {
             MyTheme {
                 val viewModel by viewModels<MainViewModel>()
                 val seconds by viewModel.seconds.collectAsState()
-                MyApp(
+                val stopTimerVisibility by viewModel.stopTimerVisibility.collectAsState()
+                TimerApp(
                     seconds = seconds,
+                    stopTimerVisibility = stopTimerVisibility,
                     onPause = { viewModel.pause() },
                     onStart = { viewModel.start() },
                     onStop = { viewModel.stop() }
@@ -65,57 +71,64 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MyApp(seconds: Int, onPause: () -> Unit, onStart: () -> Unit, onStop: () -> Unit) {
+fun TimerApp(
+    seconds: Int,
+    stopTimerVisibility: Boolean,
+    onPause: () -> Unit,
+    onStart: () -> Unit,
+    onStop: () -> Unit
+) {
     Surface(color = MaterialTheme.colors.background) {
         Box(contentAlignment = Alignment.Center) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp, 16.dp, 16.dp, 0.dp)
+                    .padding(16.dp, 16.dp, 16.dp, 16.dp)
                     .fillMaxSize()
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
+                // Title
                 Text(
-                    text = "My beautiful timer",
+                    text = "My 1 minute countdown timer",
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold,
+                    fontSize = 48.sp,
+                    fontFamily = FontFamily.Cursive,
                     color = Color.LightGray,
                     modifier = Modifier.fillMaxWidth()
                 )
+                // Chrono
                 Chrono(seconds)
-                ControlButtons(
-                    onPause = { onPause.invoke() },
-                    onStart = { onStart.invoke() },
-                    onStop = { onStop.invoke() }
-                )
+                // Start button
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Start(onStart = onStart)
+                }
+                // Pause / stop buttons
+                AnimatedVisibility(visible = stopTimerVisibility) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Pause(onPause = onPause)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Stop(onStop = onStop)
+                    }
+                }
             }
         }
     }
 }
 
-@Composable
-fun ControlButtons(
-    modifier: Modifier = Modifier,
-    onPause: () -> Unit,
-    onStart: () -> Unit,
-    onStop: () -> Unit
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        Pause(onPause = onPause)
-        Start(onStart = onStart)
-        Stop(onStop = onStop)
-    }
-}
 
 @Preview("Light Theme", widthDp = 360, heightDp = 640)
 @Composable
 fun LightPreview() {
     MyTheme {
-        MyApp(4, {}, {}, {})
+        TimerApp(4, true, {}, {}, {})
     }
 }
 
@@ -123,6 +136,6 @@ fun LightPreview() {
 @Composable
 fun DarkPreview() {
     MyTheme(darkTheme = true) {
-        MyApp(4, {}, {}, {})
+        TimerApp(4, true, {}, {}, {})
     }
 }

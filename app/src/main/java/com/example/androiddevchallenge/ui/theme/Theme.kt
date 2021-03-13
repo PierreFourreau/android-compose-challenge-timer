@@ -24,17 +24,17 @@ import androidx.compose.ui.graphics.Color
 
 val lightPalette = lightColors(
     primary = green,
-    primaryVariant = darkBlue,
+    primaryVariant = greenDark,
     onPrimary = Color.White,
     surface = Color.White,
     onSurface = darkestGrey,
-    background = darkGreen,
+    background = greenDark,
     onBackground = darkestGrey
 )
 
 val darkPalette = darkColors(
     primary = green,
-    primaryVariant = darkBlue,
+    primaryVariant = greenDark,
     onPrimary = Color.White,
     surface = darkestGrey,
     onSurface = Color.White,
