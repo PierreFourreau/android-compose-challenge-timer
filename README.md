@@ -12,7 +12,7 @@ My beautiful (or not) timer.
 <!--- Optionally point readers to interesting parts of your submission. -->
 <!--- What are you especially proud of? -->
 
-Learn compose again.
+Learn compose again, specially animations.
 
 ## :camera_flash: Screenshots
 <!-- You can add more screenshots here if you like -->
